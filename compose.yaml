@@ -1,15 +1,17 @@
 services:
   app:
-    image: analytics-api:v1
+    image: course-api:v1
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - PORT=8002
+    # environment:
+    #   - PORT=8002
+    #   - DATABASE_URL=postgresql+psycopg://course-user:course-pw@hostvalue:5432/coursedb
+    container_name: course_service
     env_file:
       - .env
     ports:
-      - "8080:8002"
+      - "8002:8002"
     command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
     volumes:
       - ./src:/code:rw
@@ -21,3 +23,18 @@ services:
           path: requirements.txt
         - action: rebuild
           path: compose.yaml
+  # postgresql+psycopg://course-user:course-pw@hostvalue:5432/coursedb
+  db_service:
+    image: postgres:17.4
+    container_name: course_db
+    environment:
+      - POSTGRES_DB=coursedb
+      - POSTGRES_USER=course-user
+      - POSTGRES_PASSWORD=course-pw
+    ports:
+      - "5432:5432"
+    volumes:
+      - course_database:/var/lib/postgresql/data
+
+volumes:
+  course_database:
