@@ -6,10 +6,10 @@ services:
       dockerfile: Dockerfile
     # environment:
     #   - PORT=8002
-    #   - DATABASE_URL=postgresql+psycopg://course-user:course-pw@hostvalue:5432/coursedb
+    #   - DATABASE_URL=postgresql+psycopg://course-user:course-pw@db_service:5432/coursedb
     container_name: course_service
     env_file:
-      - .env
+      - .env.compose
     ports:
       - "8002:8002"
     command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
@@ -23,7 +23,7 @@ services:
           path: requirements.txt
         - action: rebuild
           path: compose.yaml
-  # postgresql+psycopg://course-user:course-pw@hostvalue:5432/coursedb
+
   db_service:
     image: postgres:17.4
     container_name: course_db
@@ -33,6 +33,8 @@ services:
       - POSTGRES_PASSWORD=course-pw
     ports:
       - "5432:5432"
+    expose:
+      - 5432
     volumes:
       - course_database:/var/lib/postgresql/data
 

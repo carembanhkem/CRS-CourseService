@@ -1,3 +1,3 @@
-from .routing import router
+from .routes import course_router
 
-__all__ = ["router"]
+__all__ = ["course_router"]

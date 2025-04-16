@@ -1,8 +1,21 @@
+from contextlib import asynccontextmanager
 from typing import Union
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.courses import router as courses_router
+from api.courses import course_router as courses_router
+from api.db.base import Base
+from api.auth.routes import router as auth_router
+from api.db.db import engine
+from api.db.session import init_db
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # before app start up
+    init_db()
+    yield
+    # clean up
+
 
 app = FastAPI(
     title="Gaming Course Recommendation System",
@@ -15,6 +28,7 @@ app = FastAPI(
     license_info={
         "name": "MIT",
     },
+    lifespan= lifespan
 )
 
 app.add_middleware(
@@ -26,6 +40,7 @@ app.add_middleware(
 )
 
 app.include_router(courses_router, prefix="/api/courses", tags=["courses"])
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 
 @app.get("/")
@@ -41,3 +56,6 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/healthz")
 def read_api_health():
     return {"status": "ok"}
+
+
+# Base.metadata.create_all(engine)

@@ -1,9 +1,12 @@
 fastapi==0.115.11
 uvicorn
 gunicorn
-sqlmodel
 pydantic
+pydantic-settings
 sqlalchemy
 timescaledb
 requests
 python-decouple
+python-dotenv
+boto3
+psycopg[binary] #psycopg v3
