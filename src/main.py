@@ -4,11 +4,11 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.courses import course_router as courses_router
-from api.db.base import Base
 from api.auth.routes import router as auth_router
-from api.db.db import engine
 from api.db.session import init_db
+import sys
 
+print("Running Python from:", sys.executable)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # before app start up
@@ -57,5 +57,3 @@ def read_item(item_id: int, q: Union[str, None] = None):
 def read_api_health():
     return {"status": "ok"}
 
-
-# Base.metadata.create_all(engine)

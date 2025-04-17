@@ -1,6 +1,6 @@
 import os
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from api.courses.models import (
     CourseCreateSchema,
@@ -9,32 +9,23 @@ from api.courses.models import (
     CourseUpdateSchema,
 )
 from api.db.session import get_session
+from .service import CourseService
+from api.auth.models import UserModel
+# from ..db.config import DATABASE_URL, AWS_REGION
 
 course_router = APIRouter()
-from ..db.config import DATABASE_URL, AWS_REGION
+course_service = CourseService()
 
 
-@course_router.get("/")
-def read_courses() -> CourseListSchema:
+@course_router.get("/", response_model=CourseListSchema)
+def read_courses(user_id: str, session: Session = Depends(get_session)) -> CourseListSchema:
     # print(os.environ.get("AWS_REGION"), AWS_REGION)
     # print(os.environ.get("DATABASE_URL"), DATABASE_URL)
+    results = course_service.get_courses(user_id,session)
     return {
-        "results": [
-            CourseModel(
-                id=1,
-                title="How to play a support?",
-                description="This is description",
-                type="ORDINARY",
-            ),
-            CourseModel(
-                id=2,
-                title="How to play a carry?",
-                description="This is description",
-                type="COACHING",
-            ),
-        ],
-        "count": 2,
-    }  # type: ignore
+        "results": results,
+        "count": len(results)
+    }
 
 
 @course_router.post("/", response_model=CourseModel)
@@ -42,11 +33,8 @@ def create_course(
         payload: CourseCreateSchema, 
         session: Session = Depends(get_session)):
     data = payload.model_dump()
-    obj = CourseModel.model_validate(data)
-    session.add(obj)
-    session.commit()
-    session.refresh(obj)
-    return obj
+    new_course = course_service.create_course(data, session)
+    return new_course
 
 
 @course_router.get("/{course_id}")

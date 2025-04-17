@@ -1,4 +1,4 @@
-from api.db.db import get_db
+from api.db.session import get_session
 from api.helper.auth_helper import get_secret_hash
 import boto3
 from re import S
@@ -19,7 +19,7 @@ cognito_client = boto3.client("cognito-idp", region_name=secret_keys.AWS_REGION)
 
 
 @router.post("/signup")
-async def signup(data: SignupRequestSchema, db: Session = Depends(get_db)):
+async def signup(data: SignupRequestSchema, db: Session = Depends(get_session)):
     secret_hash = get_secret_hash(
         data.email, AWS_COGNITO_CLIENT_ID, AWS_COGNITO_CLIENT_SECRET
     )
