@@ -17,13 +17,14 @@ class CourseService:
         else:
             query = (
                 select(CourseModel)
-                .where(
-                    CourseModel.user_id
-                    == "e4eaaaf2-d142-11e1-b3e4-080027620cdd"
-                    )
+                .where(CourseModel.user_id == user_id) # can compare string and uuid
                 .order_by(CourseModel.id.asc())
                 .limit(10)
             )
         results = session.exec(query).all()
         return results
 
+    def get_course_by_id(self, course_id: str, session: Session):
+        query = select(CourseModel).where(CourseModel.id == course_id)
+        result = session.exec(query).first()
+        return result

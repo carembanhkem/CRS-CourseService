@@ -1,10 +1,10 @@
+from api.auth.models import SignupRequestSchema
 from api.db.session import get_session
 from api.helper.auth_helper import get_secret_hash
 import boto3
 from re import S
 from fastapi import APIRouter, Depends
 from pydantic import Secret
-from api.schemas.auth import SignupRequestSchema
 from secret_keys import SecretKeys
 from sqlalchemy.orm import Session
 

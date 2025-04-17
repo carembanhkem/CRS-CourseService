@@ -1,8 +1,10 @@
 from enum import Enum
 import uuid
-from sqlmodel import Column, Field, SQLModel
+from sqlmodel import Column, Field, Relationship, SQLModel
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional
+
+from api.courses import models
 
 
 class UserType(str, Enum):
@@ -20,3 +22,12 @@ class UserModel(SQLModel, table=True):
     email: str
     cognito_sub: str
     role: str
+    courses: list["models.CourseModel"] = Relationship( #this is a forward reference
+        back_populates="instructor", sa_relationship_kwargs={"cascade": "all, delete"}
+    )
+
+
+class SignupRequestSchema(SQLModel):
+    name: str
+    email: str
+    password: str

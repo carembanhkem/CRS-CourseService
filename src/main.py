@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.courses import course_router as courses_router
 from api.auth.routes import router as auth_router
-from api.db.session import init_db
+from api.db.session import init_db, insert_heroes_from_json, is_heroes_table_empty_or_missing
 import sys
 
 print("Running Python from:", sys.executable)
@@ -13,6 +13,9 @@ print("Running Python from:", sys.executable)
 async def lifespan(app: FastAPI):
     # before app start up
     init_db()
+
+    if is_heroes_table_empty_or_missing():
+        insert_heroes_from_json("api/db/heroes.json")
     yield
     # clean up
 
@@ -56,4 +59,3 @@ def read_item(item_id: int, q: Union[str, None] = None):
 @app.get("/healthz")
 def read_api_health():
     return {"status": "ok"}
-
