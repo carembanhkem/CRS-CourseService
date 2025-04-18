@@ -4,6 +4,7 @@ import uuid
 from pydantic import BaseModel
 from sqlmodel import Column, Field, Relationship, SQLModel
 from typing import Optional
+from api.heroes.schemas import HeroSchema
 
 from api.courses.constant import CourseType
 
@@ -15,13 +16,14 @@ class CourseSchema(BaseModel):
     user_id: uuid.UUID | None
     created_at: datetime | None
     updated_at: datetime | None
+    heroes: list[HeroSchema] = []  # Forward reference to Hero model
 
 
 class CourseCreateSchema(BaseModel):
     title: str
     description: Optional[str] = ""
     type: CourseType
-    target_heroes: list[int] = Field(default_factory=list)
+    heroes: list[int] = Field(default_factory=list)
     user_id: str
 
 

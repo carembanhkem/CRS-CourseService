@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlmodel import Column, Field, Relationship, SQLModel
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional
+from api import courses
 from api.courses.constant import CourseType
 
 
@@ -28,6 +29,16 @@ class UserModel(SQLModel, table=True):
         sa_relationship_kwargs={"cascade": "all, delete", "lazy": "selectin"},
     )
 
+class CourseTargetHero(SQLModel, table=True):
+    __tablename__ = "course_target_hero"
+
+    course_id: uuid.UUID = Field(
+        default=None, primary_key=True, foreign_key="courses.id"
+    )
+    hero_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="heroes.id")
+
+    def __repr__(self):
+        return f"<CourseTargetHero {self.course_id}-{self.hero_id}>"
 
 class CourseModel(SQLModel, table=True):
     __tablename__ = "courses"
@@ -46,22 +57,14 @@ class CourseModel(SQLModel, table=True):
         sa_column=Column(pg.TIMESTAMP, default=datetime.now)
     )
     instructor: Optional[UserModel] = Relationship(back_populates="courses")
+    heroes: list["Hero"] = Relationship(
+        back_populates="courses",
+        link_model=CourseTargetHero,
+        sa_relationship_kwargs={"cascade": "all, delete", "lazy": "selectin"},
+    )
 
     def __repr__(self):
         return f"<Course {self.id}-{self.title}>"
-
-
-class CourseTargetHero(SQLModel, table=True):
-    __tablename__ = "course_target_hero"
-
-    course_id: uuid.UUID = Field(
-        sa_column=Column(pg.UUID, primary_key=True, nullable=False)
-    )
-    hero_id: int = Field(sa_column=Column(pg.INTEGER, primary_key=True, nullable=False))
-
-    def __repr__(self):
-        return f"<CourseTargetHero {self.course_id}-{self.hero_id}>"
-
 
 class Hero(SQLModel, table=True):
     __tablename__ = "heroes"
@@ -70,3 +73,10 @@ class Hero(SQLModel, table=True):
         sa_column=Column(pg.INTEGER, nullable=False, primary_key=True)
     )
     name: str = Field(alias="localized_name")
+    courses: list[CourseModel] = Relationship(
+        back_populates="heroes",
+        link_model=CourseTargetHero,
+        sa_relationship_kwargs={"cascade": "all, delete", "lazy": "selectin"},
+    )
+    def __repr__(self):
+        return f"<Hero {self.id}-{self.name}>"

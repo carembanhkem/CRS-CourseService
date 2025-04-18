@@ -9,6 +9,7 @@ from api.courses.schemas import (
 )
 from api.courses.schemas import CourseSchema
 from api.db.session import get_session
+from api.heroes.schemas import HeroFilter
 from .service import CourseService
 # from ..db.config import DATABASE_URL, AWS_REGION
 
@@ -36,6 +37,12 @@ def create_course(
     if not new_course:
         raise HTTPException(status_code=400, detail="Course creation failed")
     return new_course
+
+
+@course_router.post("/by-heroes", response_model=CourseListSchema)
+def get_courses_by_heroes(payload: HeroFilter, session: Session = Depends(get_session)):
+    courses = course_service.get_courses_target_heroes(payload.hero_ids, session)
+    return {"results": courses, "count": len(courses)}
 
 
 @course_router.get("/{course_id}", response_model=CourseSchema)
