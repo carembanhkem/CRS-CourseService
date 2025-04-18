@@ -1,6 +1,6 @@
 import uuid
 from sqlmodel import Session, select
-from .models import CourseModel
+from api.db.models import CourseModel
 
 
 class CourseService:
@@ -28,3 +28,23 @@ class CourseService:
         query = select(CourseModel).where(CourseModel.id == course_id)
         result = session.exec(query).first()
         return result
+    
+    def update_course(self, course_id: str, data, session: Session):
+        query = select(CourseModel).where(CourseModel.id == course_id)
+        result = session.exec(query).first()
+        if not result:
+            return None
+        for key, value in data.items():
+            setattr(result, key, value)
+        session.commit()
+        session.refresh(result)
+        return result
+    
+    def delete_course(self, course_id: str, session: Session):
+        query = select(CourseModel).where(CourseModel.id == course_id)
+        result = session.exec(query).first()
+        if not result:
+            return False
+        session.delete(result)
+        session.commit()
+        return True

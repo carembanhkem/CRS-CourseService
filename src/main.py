@@ -4,11 +4,17 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.courses import course_router as courses_router
-from api.auth.routes import router as auth_router
-from api.db.session import init_db, insert_heroes_from_json, is_heroes_table_empty_or_missing
+from api.auth import auth_router as auth_router
+from api.db.session import (
+    init_db,
+    insert_heroes_from_json,
+    is_heroes_table_empty_or_missing,
+)
 import sys
 
 print("Running Python from:", sys.executable)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # before app start up
@@ -31,7 +37,7 @@ app = FastAPI(
     license_info={
         "name": "MIT",
     },
-    lifespan= lifespan
+    lifespan=lifespan,
 )
 
 app.add_middleware(

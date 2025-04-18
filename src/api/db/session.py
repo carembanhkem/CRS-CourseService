@@ -4,7 +4,7 @@ import sqlmodel
 from sqlmodel import SQLModel, Session, select
 from sqlalchemy import inspect, text
 
-from api.heroes.models import Hero
+from api.db.models import Hero
 from .config import DATABASE_URL
 
 engine = sqlmodel.create_engine(DATABASE_URL)
