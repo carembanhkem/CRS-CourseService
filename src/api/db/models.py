@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Column, Field, Relationship, SQLModel
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional
@@ -28,6 +28,11 @@ class UserModel(SQLModel, table=True):
         back_populates="instructor",
         sa_relationship_kwargs={"cascade": "all, delete", "lazy": "selectin"},
     )
+    
+    def __repr__(self):
+        return f"<User {self.id}-{self.email}>"
+
+    
 
 class CourseTargetHero(SQLModel, table=True):
     __tablename__ = "course_target_hero"

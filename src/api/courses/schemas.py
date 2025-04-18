@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlmodel import Column, Field, Relationship, SQLModel
 from typing import Optional
 from api.heroes.schemas import HeroSchema
@@ -17,6 +17,8 @@ class CourseSchema(BaseModel):
     created_at: datetime | None
     updated_at: datetime | None
     heroes: list[HeroSchema] = []  # Forward reference to Hero model
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CourseCreateSchema(BaseModel):

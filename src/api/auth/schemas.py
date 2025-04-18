@@ -1,6 +1,6 @@
 from enum import Enum
 import uuid
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from api.courses.schemas import CourseSchema
 
@@ -11,7 +11,13 @@ class UserSchema(BaseModel):
     email: str
     cognito_sub: str
     role: str
-    courses: list[CourseSchema] = []  # List of courses associated with the user
+    # courses: list[CourseSchema] = Field(default_factory=list)
+
+
+class UserToCourseSchema(UserSchema):
+    courses: list[CourseSchema] = Field(default_factory=list)
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SignupRequestSchema(BaseModel):
