@@ -20,3 +20,8 @@ class AuthService:
         query = select(UserModel).where(UserModel.id == user_id)
         result = session.exec(query).first()
         return result
+
+    def get_user_by_email(self, email, session: Session):
+        query = select(UserModel).where(UserModel.email == email)
+        result = session.exec(query).first()
+        return result

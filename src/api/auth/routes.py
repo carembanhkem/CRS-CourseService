@@ -48,7 +48,11 @@ def signup(data: SignupRequestSchema, session: Session = Depends(get_session)):
 
 
 @auth_router.post("/login")
-def login_user(data: LoginRequestSchema, response: Response):
+def login_user(
+    data: LoginRequestSchema,
+    response: Response,
+    session: Session = Depends(get_session),
+):
     try:
         secret_hash = get_secret_hash(
             data.email, 
@@ -79,7 +83,11 @@ def login_user(data: LoginRequestSchema, response: Response):
             key="refresh_token", value=refresh_token, httponly=True, secure=True
         )
 
-        return {"message": "User logged in successfully."}
+        user = auth_service.get_user_by_email(data.email, session)
+        if not user:
+            raise HTTPException(404, f"User not found")
+
+        return {"message": "User logged in successfully.", "role": user.role}
     except Exception as ex:
         raise HTTPException(400, f"Cognito signup exception {ex}")
 
@@ -143,22 +151,22 @@ def protected_route(user =Depends(get_current_user)):
     return {"message": "You are authenticated!", "user": user}
 
 # get user by id with option with/without courses
-# @auth_router.get(
-#     "/{user_id}",
-#     response_model=UserToCourseSchema
-#     | UserSchema,  # Have to use union type to recognize when using UserToCourseSchema
-#     response_model_exclude_unset=True,
-# )
-# async def get_me(
-#     user_id: str,
-#     include_courses: bool = Query(
-#         False, description="Set to true to include user's courses"
-#     ),
-#     session: Session = Depends(get_session),
-# ):
-#     user = auth_service.get_user(user_id, session)
-#     if not user:
-#         return {"msg": "User not found"}
-#     if not include_courses:
-#         user = UserSchema.model_validate(user, from_attributes=True)
-#     return user
+@auth_router.get(
+    "/{user_id}",
+    response_model=UserToCourseSchema
+    | UserSchema,  # Have to use union type to recognize when using UserToCourseSchema
+    response_model_exclude_unset=True,
+)
+async def get_me(
+    user_id: str,
+    include_courses: bool = Query(
+        False, description="Set to true to include user's courses"
+    ),
+    session: Session = Depends(get_session),
+):
+    user = auth_service.get_user(user_id, session)
+    if not user:
+        return {"msg": "User not found"}
+    if not include_courses:
+        user = UserSchema.model_validate(user, from_attributes=True)
+    return user
