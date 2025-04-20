@@ -87,7 +87,7 @@ def login_user(
         if not user:
             raise HTTPException(404, f"User not found")
 
-        return {"message": "User logged in successfully.", "role": user.role}
+        return {"message": "User logged in successfully.", "user": UserSchema(**user.model_dump())}
     except Exception as ex:
         raise HTTPException(400, f"Cognito signup exception {ex}")
 

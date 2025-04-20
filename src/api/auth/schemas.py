@@ -32,3 +32,8 @@ class LoginRequestSchema(BaseModel):
 class ConfirmSignupRequestSchema(BaseModel):
     email: str
     otp: str
+
+class UserSchema(BaseModel):
+    name: str
+    email: str
+    role: str
