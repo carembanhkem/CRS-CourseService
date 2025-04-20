@@ -24,3 +24,11 @@ class SignupRequestSchema(BaseModel):
     name: str
     email: str
     password: str
+
+class LoginRequestSchema(BaseModel):
+    email: str
+    password: str
+
+class ConfirmSignupRequestSchema(BaseModel):
+    email: str
+    otp: str
