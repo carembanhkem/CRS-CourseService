@@ -60,8 +60,40 @@ def upload_metadata(
 
     return new_lecture.model_dump(mode="json")
 
+
+@lecture_router.get("/all")
+def get_all_lectures(
+    user=Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    service = VideoLectureService()
+    lectures = service.get_all_lectures(session=session)
+    if not lectures:
+        return []
+    return lectures
+
+
 @lecture_router.get("/")
-def get_all_lectures(user=Depends(get_current_user),
-    session: Session = Depends(get_session),):
-    service = TextLectureService()
-    pass
+def get_lecture_info(
+    video_s3_key: str,
+    user=Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    service = VideoLectureService()
+    lecture = service.get_lecture_by_id(video_s3_key, session=session)
+    if not lecture:
+        raise HTTPException(404, "Lecture not found")
+    return lecture
+
+
+@lecture_router.get("/user")
+def get_lectures_by_user(
+    user_id: str,
+    user=Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    service = VideoLectureService()
+    lectures = service.get_lectures_by_user_id(user_id, session=session)
+    if not lectures:
+        return []
+    return lectures
