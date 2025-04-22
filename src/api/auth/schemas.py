@@ -33,7 +33,7 @@ class ConfirmSignupRequestSchema(BaseModel):
     email: str
     otp: str
 
-class UserSchema(BaseModel):
+class UserReadSchema(BaseModel):
     name: str
     email: str
     role: str

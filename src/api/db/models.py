@@ -1,12 +1,12 @@
 from datetime import datetime
 from enum import Enum
 import uuid
-from pydantic import BaseModel, ConfigDict
 from sqlmodel import Column, Field, Relationship, SQLModel
 import sqlalchemy.dialects.postgresql as pg
 from typing import Optional
 from api import courses
-from api.courses.constant import CourseType
+from api.courses.constants import CourseType
+from api.db.constants import LectureType, LectureVisibilityStatus, ProcessingStatus
 
 
 class UserType(str, Enum):
@@ -31,6 +31,10 @@ class UserModel(SQLModel, table=True):
     courses: list["CourseModel"] = Relationship(  # this is a forward reference
         back_populates="instructor",
         sa_relationship_kwargs={"cascade": "all, delete", "lazy": "selectin"},
+    )
+    lectures : list["LectureModel"] = Relationship(  # this is a forward reference
+        back_populates="instructor",
+        sa_relationship_kwargs={"cascade": "all, delete"},
     )
 
     def __repr__(self):
@@ -88,3 +92,28 @@ class Hero(SQLModel, table=True):
     )
     def __repr__(self):
         return f"<Hero {self.id}-{self.name}>"
+
+class LectureModel(SQLModel, table=True):
+    __tablename__ = "lectures"
+
+    id: uuid.UUID = Field(
+        sa_column=Column(pg.UUID, nullable=False, primary_key=True, default=uuid.uuid4)
+    )
+    title: str
+    type: LectureType
+    content: Optional[str] = ""
+    video_s3_key: Optional[str] = ""
+    visibility: LectureVisibilityStatus = Field(
+        default=LectureVisibilityStatus.PRIVATE, nullable=False
+    )
+    processing_status: ProcessingStatus = Field(
+        default=ProcessingStatus.IN_PROGRESS, nullable=False
+    )
+    user_id: uuid.UUID | None = Field(default=None, foreign_key="users.id")
+    created_at: datetime | None = Field(
+        sa_column=Column(pg.TIMESTAMP, default=datetime.now)
+    )
+    updated_at: datetime | None = Field(
+        sa_column=Column(pg.TIMESTAMP, default=datetime.now)
+    )
+    instructor: Optional[UserModel] = Relationship(back_populates="lectures")

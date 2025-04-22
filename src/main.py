@@ -4,6 +4,7 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.courses import course_router as courses_router
+from api.lectures import lecture_router as lecture_router
 from api.auth import auth_router as auth_router
 from api.db.session import (
     init_db,
@@ -49,6 +50,7 @@ app.add_middleware(
 )
 
 app.include_router(courses_router, prefix="/api/courses", tags=["courses"])
+app.include_router(lecture_router, prefix="/api/lectures", tags=["lectures"])
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 

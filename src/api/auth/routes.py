@@ -87,7 +87,10 @@ def login_user(
         if not user:
             raise HTTPException(404, f"User not found")
 
-        return {"message": "User logged in successfully.", "user": UserSchema(**user.model_dump())}
+        return {
+            "message": "User logged in successfully.",
+            "user": UserSchema(**user.model_dump()),
+        }
     except Exception as ex:
         raise HTTPException(400, f"Cognito signup exception {ex}")
 
@@ -149,6 +152,7 @@ def refresh_token(
 @auth_router.get("/me")
 def protected_route(user =Depends(get_current_user)):
     return {"message": "You are authenticated!", "user": user}
+
 
 # get user by id with option with/without courses
 @auth_router.get(

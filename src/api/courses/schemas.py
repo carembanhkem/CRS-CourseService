@@ -6,7 +6,7 @@ from sqlmodel import Column, Field, Relationship, SQLModel
 from typing import Optional
 from api.heroes.schemas import HeroSchema
 
-from api.courses.constant import CourseType
+from api.courses.constants import CourseType
 
 class CourseSchema(BaseModel):
     id: uuid.UUID
