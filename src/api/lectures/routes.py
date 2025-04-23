@@ -18,7 +18,7 @@ s3_client = boto3.client("s3", region_name=secret_keys.AWS_REGION)
 @lecture_router.get("/url")
 def get_presigned_url(user=Depends(get_current_user)):
     try:
-        video_id = f"videos/{user['sub']}/{uuid.uuid4()}"  # we already set prefix of objects stored in S3 bucket is "videos".
+        video_id = f"videos/{user['sub']}/{uuid.uuid4()}.mp4"  # we already set prefix of objects stored in S3 bucket is "videos".
         # The uuid part make the video_id is unique
         # print(video_id)
 

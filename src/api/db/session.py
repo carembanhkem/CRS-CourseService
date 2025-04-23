@@ -14,7 +14,7 @@ if DATABASE_URL == "":
 
 def init_db():
     print("creating database ...")
-    print(DATABASE_URL)
+    # print(DATABASE_URL)
     SQLModel.metadata.create_all(engine)
 
 
