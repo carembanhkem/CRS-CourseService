@@ -156,7 +156,7 @@ def protected_route(user =Depends(get_current_user)):
 
 # get user by id with option with/without courses
 @auth_router.get(
-    "/{user_id}",
+    "/user/{user_id}", # bi loi voi /signup route
     response_model=UserToCourseSchema
     | UserSchema,  # Have to use union type to recognize when using UserToCourseSchema
     response_model_exclude_unset=True,
